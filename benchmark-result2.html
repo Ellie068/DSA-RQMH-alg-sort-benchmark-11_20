@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting Algorithm Benchmark Visualizer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #94a3b8;
+        }
+
+        .controls {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .control-group label {
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+
+        select {
+            background: #334155;
+            color: #fff;
+            border: 2px solid #475569;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        select:hover {
+            border-color: #64748b;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .chart-container {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .chart-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 500px;
+        }
+
+        .stats-section {
+            margin-bottom: 2rem;
+        }
+
+        .stats-controls {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .color-badge {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+
+        .stat-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        .insight {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+            border-radius: 8px;
+            color: #93c5fd;
+            font-size: 1.05rem;
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            .controls {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Sorting Algorithm Benchmark</h1>
+            <p>Array size: 1,000,000 elements | 25 runs per configuration</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="viewMode">View Mode:</label>
+                <select id="viewMode">
+                    <option value="averages">Average Times Comparison</option>
+                    <option value="scaling">Key Length Scaling</option>
+                    <option value="distribution">Individual Run Distribution</option>
+                </select>
+            </div>
+
+            <div class="control-group" id="keyLengthGroup" style="display: none;">
+                <label for="keyLength">Filter Key Length:</label>
+                <select id="keyLength">
+                    <option value="all">All Key Lengths</option>
+                    <option value="7">7 keys</option>
+                    <option value="10">10 keys</option>
+                    <option value="12">12 keys</option>
+                    <option value="18">18 keys</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2 class="chart-title" id="chartTitle">Average Execution Time by Key Length</h2>
+            <div class="chart-wrapper">
+                <canvas id="mainChart"></canvas>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stats-controls">
+                <label for="statsKeyLength" style="font-weight: 500; color: #cbd5e1;">Statistics for:</label>
+                <select id="statsKeyLength">
+                    <option value="7">7 keys</option>
+                    <option value="10">10 keys</option>
+                    <option value="12">12 keys</option>
+                    <option value="18">18 keys</option>
+                </select>
+            </div>
+            <div class="stats-grid" id="statsGrid"></div>
+        </div>
+
+        <div class="insight">
+            💡 <strong>Key Insight:</strong> Quick Sort consistently outperforms all others (~111ms regardless of key length). 
+            Radix Sort's performance degrades dramatically with longer keys (206ms → 510ms).
+        </div>
+    </div>
+
+    <script>
+        // Updated benchmark data - all with 25 runs
+        const benchmarks = [
+            {
+                keyLength: 7,
+                runs: 25,
+                algorithms: {
+                    'Radix Sort': {
+                        avg: 206.52,
+                        times: [266, 239, 216, 292, 206, 229, 213, 216, 211, 222, 194, 193, 194, 187, 190, 184, 188, 188, 188, 193, 191, 188, 189, 192, 194]
+                    },
+                    'Quick Sort': {
+                        avg: 109.96,
+                        times: [117, 115, 112, 115, 108, 109, 110, 107, 110, 113, 107, 109, 107, 111, 109, 110, 110, 108, 110, 109, 105, 107, 109, 110, 112]
+                    },
+                    'Merge Sort': {
+                        avg: 217.88,
+                        times: [232, 235, 212, 239, 223, 222, 227, 225, 210, 210, 211, 215, 216, 215, 218, 213, 209, 213, 208, 218, 215, 214, 216, 214, 217]
+                    },
+                    'Heap Sort': {
+                        avg: 290.76,
+                        times: [318, 351, 316, 263, 264, 290, 278, 256, 254, 270, 313, 270, 263, 314, 324, 260, 281, 263, 356, 296, 289, 294, 332, 264, 290]
+                    }
+                }
+            },
+            {
+                keyLength: 10,
+                runs: 25,
+                algorithms: {
+                    'Radix Sort': {
+                        avg: 309.36,
+                        times: [353, 364, 298, 294, 299, 296, 293, 317, 331, 293, 300, 309, 304, 301, 290, 328, 293, 309, 312, 300, 308, 299, 342, 309, 292]
+                    },
+                    'Quick Sort': {
+                        avg: 112.88,
+                        times: [110, 125, 111, 107, 109, 111, 113, 110, 123, 112, 118, 116, 108, 110, 112, 114, 113, 112, 114, 115, 114, 106, 109, 119, 111]
+                    },
+                    'Merge Sort': {
+                        avg: 222.56,
+                        times: [231, 215, 211, 216, 218, 220, 218, 227, 223, 225, 217, 229, 216, 229, 217, 216, 225, 220, 239, 233, 228, 219, 220, 221, 231]
+                    },
+                    'Heap Sort': {
+                        avg: 283.92,
+                        times: [291, 249, 251, 256, 313, 308, 300, 281, 266, 265, 291, 323, 280, 294, 268, 281, 282, 299, 330, 277, 276, 278, 273, 274, 292]
+                    }
+                }
+            },
+            {
+                keyLength: 12,
+                runs: 25,
+                algorithms: {
+                    'Radix Sort': {
+                        avg: 355.12,
+                        times: [445, 416, 403, 370, 358, 340, 354, 347, 353, 330, 336, 374, 343, 345, 328, 337, 335, 336, 344, 336, 356, 353, 340, 342, 357]
+                    },
+                    'Quick Sort': {
+                        avg: 113.24,
+                        times: [142, 121, 137, 120, 108, 122, 114, 112, 109, 104, 107, 108, 108, 111, 115, 111, 108, 110, 108, 109, 108, 109, 110, 114, 106]
+                    },
+                    'Merge Sort': {
+                        avg: 234.88,
+                        times: [267, 251, 252, 242, 246, 250, 238, 216, 248, 244, 223, 213, 225, 224, 242, 219, 220, 240, 217, 225, 227, 249, 225, 217, 252]
+                    },
+                    'Heap Sort': {
+                        avg: 294.68,
+                        times: [356, 349, 289, 311, 385, 311, 324, 368, 268, 254, 295, 265, 261, 269, 297, 283, 256, 303, 299, 261, 271, 257, 269, 277, 289]
+                    }
+                }
+            },
+            {
+                keyLength: 18,
+                runs: 25,
+                algorithms: {
+                    'Radix Sort': {
+                        avg: 509.8,
+                        times: [577, 535, 495, 499, 500, 505, 528, 502, 499, 499, 496, 497, 494, 500, 496, 507, 501, 512, 500, 504, 519, 506, 514, 523, 537]
+                    },
+                    'Quick Sort': {
+                        avg: 110.68,
+                        times: [114, 109, 108, 110, 109, 109, 110, 105, 109, 110, 109, 111, 111, 109, 116, 111, 107, 119, 108, 108, 109, 123, 106, 115, 112]
+                    },
+                    'Merge Sort': {
+                        avg: 220.72,
+                        times: [210, 209, 223, 214, 220, 233, 221, 210, 254, 215, 217, 229, 208, 212, 234, 210, 210, 237, 217, 214, 231, 211, 219, 241, 219]
+                    },
+                    'Heap Sort': {
+                        avg: 252.52,
+                        times: [276, 239, 264, 251, 257, 257, 243, 246, 249, 246, 246, 248, 248, 248, 252, 248, 252, 253, 253, 247, 252, 257, 249, 273, 259]
+                    }
+                }
+            }
+        ];
+
+        const colors = {
+            'Radix Sort': '#ef4444',
+            'Quick Sort': '#10b981',
+            'Merge Sort': '#3b82f6',
+            'Heap Sort': '#f59e0b'
+        };
+
+        let currentChart = null;
+
+        function createAveragesChart() {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            
+            const labels = benchmarks.map(b => `${b.keyLength} keys`);
+            const datasets = Object.keys(benchmarks[0].algorithms).map(alg => ({
+                label: alg,
+                data: benchmarks.map(b => b.algorithms[alg].avg),
+                backgroundColor: colors[alg],
+                borderColor: colors[alg],
+                borderWidth: 2
+            }));
+
+            return new Chart(ctx, {
+                type: 'bar',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e2e8f0', font: { size: 14 } }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#e2e8f0',
+                            bodyColor: '#e2e8f0',
+                            borderColor: '#475569',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Time (ms)', color: '#94a3b8' },
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(71, 85, 105, 0.3)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(71, 85, 105, 0.3)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createScalingChart() {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            
+            const datasets = Object.keys(benchmarks[0].algorithms).map(alg => ({
+                label: alg,
+                data: benchmarks.map(b => ({ x: b.keyLength, y: b.algorithms[alg].avg })),
+                borderColor: colors[alg],
+                backgroundColor: colors[alg],
+                tension: 0.3,
+                borderWidth: 3,
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }));
+
+            return new Chart(ctx, {
+                type: 'line',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e2e8f0', font: { size: 14 } }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#e2e8f0',
+                            bodyColor: '#e2e8f0',
+                            borderColor: '#475569',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Time (ms)', color: '#94a3b8' },
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(71, 85, 105, 0.3)' }
+                        },
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: 'Max Key Length', color: '#94a3b8' },
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(71, 85, 105, 0.3)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createDistributionChart() {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            const keyLength = document.getElementById('keyLength').value;
+            
+            const filtered = keyLength === 'all' 
+                ? benchmarks 
+                : benchmarks.filter(b => b.keyLength === parseInt(keyLength));
+
+            const datasets = Object.keys(benchmarks[0].algorithms).map(alg => {
+                const data = [];
+                filtered.forEach(benchmark => {
+                    benchmark.algorithms[alg].times.forEach((time, idx) => {
+                        data.push({ x: idx + 1, y: time });
+                    });
+                });
+
+                return {
+                    label: alg,
+                    data: data,
+                    backgroundColor: colors[alg],
+                    borderColor: colors[alg],
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                };
+            });
+
+            return new Chart(ctx, {
+                type: 'scatter',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e2e8f0', font: { size: 14 } }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#e2e8f0',
+                            bodyColor: '#e2e8f0',
+                            borderColor: '#475569',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: (context) => `${context.dataset.label}: ${context.parsed.y}ms`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Time (ms)', color: '#94a3b8' },
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(71, 85, 105, 0.3)' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Run Number', color: '#94a3b8' },
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(71, 85, 105, 0.3)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            const viewMode = document.getElementById('viewMode').value;
+            const keyLengthGroup = document.getElementById('keyLengthGroup');
+            const chartTitle = document.getElementById('chartTitle');
+
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            if (viewMode === 'averages') {
+                keyLengthGroup.style.display = 'none';
+                chartTitle.textContent = 'Average Execution Time by Key Length';
+                currentChart = createAveragesChart();
+            } else if (viewMode === 'scaling') {
+                keyLengthGroup.style.display = 'none';
+                chartTitle.textContent = 'Algorithm Scaling with Key Length';
+                currentChart = createScalingChart();
+            } else if (viewMode === 'distribution') {
+                keyLengthGroup.style.display = 'flex';
+                chartTitle.textContent = 'Individual Run Times Distribution';
+                currentChart = createDistributionChart();
+            }
+        }
+
+        function createStatsCards() {
+            const statsGrid = document.getElementById('statsGrid');
+            const selectedKeyLength = parseInt(document.getElementById('statsKeyLength').value);
+            const benchmark = benchmarks.find(b => b.keyLength === selectedKeyLength);
+            
+            statsGrid.innerHTML = '';
+
+            Object.entries(colors).forEach(([alg, color]) => {
+                const algData = benchmark.algorithms[alg];
+                const fastest = Math.min(...algData.times);
+                const slowest = Math.max(...algData.times);
+                const avg = algData.avg.toFixed(2);
+
+                const card = document.createElement('div');
+                card.className = 'stat-card';
+                card.innerHTML = `
+                    <div class="stat-header">
+                        <div class="color-badge" style="background-color: ${color}"></div>
+                        <h3>${alg}</h3>
+                    </div>
+                    <div class="stat-item">
+                        <span>Fastest Run:</span>
+                        <strong>${fastest}ms</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Slowest Run:</span>
+                        <strong>${slowest}ms</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Average Time:</span>
+                        <strong>${avg}ms</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Variance:</span>
+                        <strong>${slowest - fastest}ms</strong>
+                    </div>
+                `;
+                statsGrid.appendChild(card);
+            });
+        }
+
+        // Event listeners
+        document.getElementById('viewMode').addEventListener('change', updateChart);
+        document.getElementById('keyLength').addEventListener('change', updateChart);
+        document.getElementById('statsKeyLength').addEventListener('change', createStatsCards);
+
+        // Initialize
+        updateChart();
+        createStatsCards();
+    </script>
+</body>
+</html>

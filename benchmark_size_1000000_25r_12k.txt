@@ -1,0 +1,20 @@
+Benchmark report
+  Array size: 1000000
+  Runs: 25
+  Max Key Length: 12
+
+  Radix Sort:
+    avg_ms: 355.12ms
+    times_ms: 445ms - 416ms - 403ms - 370ms - 358ms - 340ms - 354ms - 347ms - 353ms - 330ms - 336ms - 374ms - 343ms - 345ms - 328ms - 337ms - 335ms - 336ms - 344ms - 336ms - 356ms - 353ms - 340ms - 342ms - 357ms
+
+  Quick Sort:
+    avg_ms: 113.24ms
+    times_ms: 142ms - 121ms - 137ms - 120ms - 108ms - 122ms - 114ms - 112ms - 109ms - 104ms - 107ms - 108ms - 108ms - 111ms - 115ms - 111ms - 108ms - 110ms - 108ms - 109ms - 108ms - 109ms - 110ms - 114ms - 106ms
+
+  Merge Sort:
+    avg_ms: 234.88ms
+    times_ms: 267ms - 251ms - 252ms - 242ms - 246ms - 250ms - 238ms - 216ms - 248ms - 244ms - 223ms - 213ms - 225ms - 224ms - 242ms - 219ms - 220ms - 240ms - 217ms - 225ms - 227ms - 249ms - 225ms - 217ms - 252ms
+
+  Heap Sort:
+    avg_ms: 294.68ms
+    times_ms: 356ms - 349ms - 289ms - 311ms - 385ms - 311ms - 324ms - 368ms - 268ms - 254ms - 295ms - 265ms - 261ms - 269ms - 297ms - 283ms - 256ms - 303ms - 299ms - 261ms - 271ms - 257ms - 269ms - 277ms - 289ms
