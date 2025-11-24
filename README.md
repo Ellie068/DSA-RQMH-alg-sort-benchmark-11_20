@@ -1,9 +1,9 @@
 # DSA-RQMH-alg-sort-benchmark-11_20
 Radix, Quick, Merge, Heap sort algorithm benchmarking results for homework of Data Structure &amp; Algorithm course, Nov-20th
 
-From my Analysis of the Sorting Algorithm Benchmark
-The Quick Sort dominates - 2x faster than Merge/Radix
-Radix vs Merge - Close call, but Radix slightly edges out (on 7 key length)
+From my Analysis of the Sorting Algorithm Benchmark  
+The Quick Sort dominates - 2x faster than Merge/Radix  
+Radix vs Merge - Close call, but Radix slightly edges out (on 7 key length)  
 Heap Sort - As expected. It's the slowest for comparison-based sorting
 
 ### 1 Million Array list with 7 keys max length, and 25 runs.
