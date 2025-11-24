@@ -4,7 +4,6 @@ Radix vs Merge - Close call, but Radix slightly edges out (on 7 key length)
 Heap Sort - As expected. It's the slowest for comparison-based sorting  
 
 [Click Here!](https://ellie068.github.io/DSA-RQMH-alg-sort-benchmark-11_20/ "This Repo's page deployment") to check out the somewhat interactive, friendly UI to see the Benchmark results in Graphs and Charts.  
-the 'click me' is just this link: [https://ellie068.github.io/DSA-RQMH-alg-sort-benchmark-11_20/](https://ellie068.github.io/DSA-RQMH-alg-sort-benchmark-11_20/ "https://ellie068.github.io/DSA-RQMH-alg-sort-benchmark-11_20/")
 
 ### 1 Million Array list with 7 keys max length, and 25 runs.
 
